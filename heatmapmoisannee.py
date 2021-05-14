@@ -64,6 +64,6 @@ for moisannee in df_copy.moisannee.sort_values().unique():
     df_hour_list.append(df_copy.loc[df_copy.moisannee == moisannee, ['lat', 'lon', 'count']].groupby(['lat', 'lon']).sum().reset_index().values.tolist())
 
 base_map = generateBaseMap(default_zoom_start=7)
-HeatMapWithTime(df_hour_list,min_speed= 3 ,radius=5,index= [str(i) for i in df_copy["moisannee"]], gradient={0.2: 'blue' , 0.4: 'lime', 0.6: 'orange', 1: 'red'}, min_opacity=0.5, max_opacity=0.8, use_local_extrema=True).add_to(base_map)
+HeatMapWithTime(df_hour_list,min_speed= 3 ,radius=5, gradient={0.2: 'blue' , 0.4: 'lime', 0.6: 'orange', 1: 'red'}, min_opacity=0.5, max_opacity=0.8, use_local_extrema=True).add_to(base_map)
 base_map.get_root().html.add_child(folium.Element(title_html))
 base_map.save('heatmap_semaine2.html')
