@@ -1,9 +1,4 @@
-from flask import Flask, render_template
-import folium
-import csv
 from csv import DictReader
-# app = Flask(__name__)
-import folium
 import folium.plugins
 import PopupCostum
 
@@ -27,15 +22,17 @@ folium.GeoJson('./data/region-grand-est.geojson',
 fg1=folium.FeatureGroup(name='Signalements 2017', show=False).add_to(map_france)
 fg2=folium.FeatureGroup(name='Signalements 2018', show=False).add_to(map_france)
 fg3=folium.FeatureGroup(name='Signalements 2019', show=False).add_to(map_france)
+fg4=folium.FeatureGroup(name='Signalements 2020', show=False).add_to(map_france)
 fg5=folium.FeatureGroup(name='Signalements 2017-2019', show=True).add_to(map_france)
 
 tiques_cluster17 = folium.plugins.MarkerCluster().add_to(fg1)
 tiques_cluster18 = folium.plugins.MarkerCluster().add_to(fg2)
 tiques_cluster19 = folium.plugins.MarkerCluster().add_to(fg3)
+tiques_cluster20 = folium.plugins.MarkerCluster().add_to(fg4)
 tiques_cluster1719 = folium.plugins.MarkerCluster().add_to(fg5)
 
-with open('./data/humdata.csv', 'r',encoding='UTF-8') as fp :
-    csv_dict_reader = DictReader(fp, delimiter='\t')
+with open('./data/humdata_sort.csv', 'r',encoding='UTF-8') as fp :
+    csv_dict_reader = DictReader(fp, delimiter=',')
     # la liste des nom des attrbuts :
     column_names = csv_dict_reader.fieldnames
 
@@ -44,7 +41,7 @@ with open('./data/humdata.csv', 'r',encoding='UTF-8') as fp :
         latitude = row["lat"]
         longitude = row["lon"]
 
-        valeurs_popup= PopupCostum.popup(row["annee_extract"], row["sex_pique"],
+        valeurs_popup= PopupCostum.popup(row["date_piqure_saisie"], row["sex_pique"],
                                                             row["environnement"], row["raison_presence"],
                                                             row["departement"])
         folium.Marker([latitude, longitude],
@@ -52,7 +49,7 @@ with open('./data/humdata.csv', 'r',encoding='UTF-8') as fp :
                       icon=folium.Icon(color='green', icon='certificate'),
                       tooltip="Cliquez Ici"
                       ).add_to(tiques_cluster1719)
-        if row["annee_extract"] == "2017":
+        if row["year"] == "2017":
             #valeurs_popup = PopupCostum.popup(row["annee_extract"])
             latitude = row["lat"]
             longitude = row["lon"]
@@ -62,19 +59,26 @@ with open('./data/humdata.csv', 'r',encoding='UTF-8') as fp :
                           icon=folium.Icon(color='green', icon='certificate'),
                           tooltip= "Cliquez Ici"
                           ).add_to(tiques_cluster17)
-        elif row["annee_extract"] == "2018":
+        elif row["year"] == "2018":
             folium.Marker([latitude, longitude],
                           popup=valeurs_popup,
                           icon=folium.Icon(color='red', icon='certificate'),
                           tooltip="Cliquez Ici"
                           ).add_to(tiques_cluster18)
-        elif row["annee_extract"] == "2019":
+        elif row["year"] == "2019":
             #valeurs_popup = PopupCostum.popup(row["annee_extract"])
             folium.Marker([latitude, longitude],
                           popup=valeurs_popup,
                           icon=folium.Icon(color='red', icon='certificate'),
                           tooltip="Cliquez Ici"
                           ).add_to(tiques_cluster19)
+        elif row["year"] == "2020":
+            # valeurs_popup = PopupCostum.popup(row["annee_extract"])
+            folium.Marker([latitude, longitude],
+                          popup=valeurs_popup,
+                          icon=folium.Icon(color='red', icon='certificate'),
+                          tooltip="Cliquez Ici"
+                          ).add_to(tiques_cluster20)
 
 map_france.add_child(fg1)
 
@@ -83,8 +87,6 @@ folium.plugins.Geocoder(collapsed=True, position='topright', add_marker=False,).
 
 map_france.get_root().html.add_child(folium.Element(title_html))
 map_france.save("tique.html")
-
-
 
 
 
